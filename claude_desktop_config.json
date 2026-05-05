@@ -1,0 +1,54 @@
+{
+  "globalShortcut": "",
+  "mcpServers": {
+    "github": {
+      "command": "wsl",
+      "args": [
+        "bash",
+        "-ic",
+        "GITHUB_PERSONAL_ACCESS_TOKEN=你的GitHub_Token npx -y @modelcontextprotocol/server-github"
+      ],
+      "env": {}
+    },
+    "wsl-exec": {
+      "command": "wsl",
+      "args": [
+        "bash",
+        "-ic",
+        "npx -y mcp-wsl-exec"
+      ],
+      "env": {}
+    },
+    "browser-use": {
+      "command": "D:\\python3.13\\Scripts\\uvx.exe",
+      "args": [
+        "mcp-server-browser-use@latest"
+      ],
+      "env": {
+        "MCP_LLM_PROVIDER": "deepseek",
+        "MCP_LLM_MODEL_NAME": "deepseek-chat",
+        "MCP_LLM_BASE_URL": "https://api.deepseek.com",
+        "MCP_LLM_API_KEY": "你的DeepSeek_API_Key",
+        "DEEPSEEK_API_KEY": "你的DeepSeek_API_Key",
+        "CHROME_PATH": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "BROWSER_USE_CHROME_INSTANCE_PATH": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "BROWSER_USE_HEADLESS": "false",
+        "MCP_AGENT_TOOL_MAX_STEPS": "30",
+        "MCP_SERVER_LOGGING_LEVEL": "DEBUG",
+        "USE OWN BROWSER": "True",
+        "USE_OWN_BROWSER": "True"
+      }
+    }
+  },
+  "deploymentMode": "3p",
+  "preferences": {
+    "menuBarEnabled": false,
+    "legacyQuickEntryEnabled": false,
+    "coworkScheduledTasksEnabled": true,
+    "ccdScheduledTasksEnabled": false,
+    "sidebarMode": "task",
+    "dockBounceEnabled": false,
+    "coworkWebSearchEnabled": true
+  }
+}
