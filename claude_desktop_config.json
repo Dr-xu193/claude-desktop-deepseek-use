@@ -33,6 +33,7 @@
         "CHROME_PATH": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         "BROWSER_USE_CHROME_INSTANCE_PATH": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "_comment_chrome_path": "以上三个 Chrome 路径原本是想调用本地已安装的 Chrome.exe，但实际配置中这里存在兼容性问题，目前只能拉起 Chrome 的测试版（Chromium test shell）。如需彻底解决，请自行排查 browser-use 与本地 Chrome 实例的对接方式，或查阅 browser-use 官方文档了解 USE_OWN_BROWSER 的正确配置方法。",
         "BROWSER_USE_HEADLESS": "false",
         "MCP_AGENT_TOOL_MAX_STEPS": "30",
         "MCP_SERVER_LOGGING_LEVEL": "DEBUG"
