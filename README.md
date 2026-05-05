@@ -13,7 +13,7 @@
 - [5. WSL-Exec 部署](#5-wsl-exec-部署)
 - [6. GitHub MCP 部署](#6-github-mcp-部署)
 - [7. Browser-Use 部署](#7-browser-use-部署)
-- [8. 验证一切正常](#8-验证一切正常)
+- [8. 最终配置文件](#8-最终配置文件)
 - [9. 工具路由规则（记忆配置）](#9-工具路由规则记忆配置)
 - [10. 常见问题](#10-常见问题)
 
@@ -127,8 +127,6 @@
 
 ## 5. WSL-Exec 部署
 
-WSL-Exec 让 Claude 能够在你本机的 WSL（Windows Subsystem for Linux）中执行命令。
-
 ### 5.1 安装 WSL2
 
 以管理员身份打开 PowerShell 或命令提示符：
@@ -160,15 +158,14 @@ wsl --set-default-version 2
 ### 5.2 安装 Ubuntu 发行版
 
 ```powershell
-# 从 Microsoft Store 安装 Ubuntu
 wsl --install -d Ubuntu
 ```
 
-首次启动 Ubuntu 会要求创建用户名和密码。建议使用简单的用户名（如你的 Windows 用户名）。
+首次启动 Ubuntu 会要求创建用户名和密码。
 
 ### 5.3 验证 WSL 安装
 
-在 WSL（启动 Ubuntu 终端）中运行：
+在 WSL 终端中运行：
 
 ```bash
 whoami
@@ -181,246 +178,156 @@ ls /mnt/c/ /mnt/d/
 # 应显示你的 C 盘和 D 盘内容
 ```
 
-### 5.4 安装常用开发工具（在 WSL 内）
+### 5.4 安装常用开发工具
 
 ```bash
 # 更新包列表
 sudo apt update && sudo apt upgrade -y
 
-# Python 3（含 pip）
+# Python 3
 sudo apt install python3 python3-pip -y
 
 # Git
 sudo apt install git -y
 
-# Node.js 和 npm（通过 NodeSource）
+# Node.js 和 npm
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install nodejs -y
 
-# 验证版本
+# 验证
 python3 --version
 git --version
 node --version
 npm --version
 ```
 
-### 5.5 配置 WSL-Exec MCP Server
-
-WSL-Exec 是一个 MCP Server，让 Claude 通过 MCP 协议调用 WSL 命令。
-
-在 Claude Desktop 的 MCP 配置文件中添加：
-
-```json
-{
-  "mcpServers": {
-    "wsl-exec": {
-      "command": "wsl",
-      "args": ["bash", "-c", "npx @anthropic/mcp-server-wsl-exec"],
-      "env": {}
-    }
-  }
-}
-```
-
-> 注意：具体的 MCP Server 包名和配置方式取决于你使用的 WSL-Exec 实现。以上为示例格式，请根据实际包名调整。
-
-### 5.6 验证 WSL-Exec
-
-在 Claude 中执行：
-
-> "列出我的 D 盘根目录"
-
-预期 Claude 能调用 `get_directory_info` 返回 D 盘的内容。
-
----
-
-## 6. GitHub MCP 部署
-
-GitHub MCP 让 Claude 直接调用 GitHub REST API。
-
-### 6.1 创建 Personal Access Token
-
-1. 打开 [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
-2. 点击 **Generate new token → Generate new token (classic)**
-3. 填写 Note（如 `claude-desktop-mcp`）
-4. 设置过期时间（建议 90 天或自定义）
-5. 勾选以下权限：
-   - `repo`（完整仓库访问权限）
-   - `workflow`（如果需要操作 GitHub Actions）
-   - `read:org`（如果需要访问组织信息）
-6. 点击 **Generate token**
-7. **立即复制保存** Token（离开页面后无法再次查看）
-
-### 6.2 配置 GitHub MCP
-
-在 Claude Desktop 的 MCP 配置中添加：
-
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxxxxxxxxxxxxxxxxxx"
-      }
-    }
-  }
-}
-```
-
-将 `ghp_xxxxxxxxxxxxxxxxxxxx` 替换为上一步生成的 Token。
-
-### 6.3 验证 GitHub MCP
-
-在 Claude 中执行：
-
-> "搜索 GitHub 上 star 最多的 Python 项目"
-
-预期 Claude 能调用 `search_repositories` 并返回结果。
-
-### 6.4 配置 Git 用户信息（在 WSL 内）
+### 5.5 配置 Git 用户信息
 
 ```bash
 git config --global user.name "你的GitHub用户名"
 git config --global user.email "你的GitHub邮箱"
 ```
 
-这样 WSL-Exec + GitHub MCP 形成完整闭环：API 操作走 GitHub MCP，本地 git 操作走 WSL-Exec。
+---
+
+## 6. GitHub MCP 部署
+
+### 6.1 创建 Personal Access Token
+
+1. 打开 [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
+2. 点击 **Generate new token → Generate new token (classic)**
+3. 填写 Note（如 `claude-desktop-mcp`）
+4. 设置过期时间（建议 90 天）
+5. 勾选以下权限：
+   - `repo`（完整仓库访问权限）
+   - `workflow`（如需 GitHub Actions）
+   - `read:org`（如需访问组织信息）
+6. 点击 **Generate token**
+7. **立即复制保存** Token（离开页面后无法再次查看）
 
 ---
 
 ## 7. Browser-Use 部署
 
-Browser-Use 是独立的浏览器自动化 MCP Server，不依赖 Chrome 扩展。
+### 7.1 安装 uvx（Windows 端）
 
-### 7.1 安装依赖
+Browser-Use 通过 `uvx` 运行，无需手动创建虚拟环境：
 
-Browser-Use 需要 Python 3.10+ 环境。推荐在 Windows 上或 WSL 内安装。
-
-```bash
-# 创建虚拟环境（推荐）
-python3 -m venv ~/browser-use-env
-source ~/browser-use-env/bin/activate
-
-# 安装 browser-use
-pip install browser-use
-
-# 安装 Playwright 浏览器
-playwright install chromium
+```powershell
+# 在 PowerShell 中安装 uv
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### 7.2 配置 API Key
+安装后 `uvx.exe` 会出现在你的 Python Scripts 目录下（如 `D:\python3.13\Scripts\uvx.exe`）。
 
-Browser-Use 需要一个 LLM API Key 来驱动浏览器代理。根据你使用的模型配置：
+### 7.2 获取 DeepSeek API Key
 
-```bash
-# 如果用 OpenAI
-export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxx"
+1. 打开 [DeepSeek 开放平台](https://platform.deepseek.com/)
+2. 注册/登录，进入 **API Keys** 页面
+3. 点击 **创建 API Key**，复制保存
 
-# 如果用 DeepSeek
-export DEEPSEEK_API_KEY="sk-xxxxxxxxxxxxxxxxxxxx"
-
-# 如果用 Anthropic
-export ANTHROPIC_API_KEY="sk-ant-xxxxxxxxxxxxxxxxxxxx"
-```
-
-### 7.3 配置 Browser-Use MCP Server
-
-在 Claude Desktop 的 MCP 配置中添加：
-
-```json
-{
-  "mcpServers": {
-    "browser-use": {
-      "command": "python3",
-      "args": ["-m", "browser_use.mcp_server"],
-      "env": {
-        "OPENAI_API_KEY": "sk-xxxxxxxxxxxxxxxxxxxx"
-      }
-    }
-  }
-}
-```
-
-或者在 WSL 中运行：
-
-```json
-{
-  "mcpServers": {
-    "browser-use": {
-      "command": "wsl",
-      "args": ["bash", "-c", "source ~/browser-use-env/bin/activate && python3 -m browser_use.mcp_server"],
-      "env": {
-        "OPENAI_API_KEY": "sk-xxxxxxxxxxxxxxxxxxxx"
-      }
-    }
-  }
-}
-```
-
-### 7.4 验证 Browser-Use
-
-在 Claude 中执行：
-
-> "打开浏览器，访问 https://www.youtube.com，等搜索框出现后告诉我"
-
-预期 Claude 能调用 `run_browser_agent` 自动完成任务。
+> 也可以用 OpenAI、Anthropic 等作为 Browser-Use 的驱动模型，只需修改配置中的 `MCP_LLM_PROVIDER` 和对应 API Key。
 
 ---
 
-## 8. 验证一切正常
+## 8. 最终配置文件
 
-完成所有部署后，按顺序验证以下场景：
+### 8.1 配置文件位置
 
-### 8.1 文件系统
-
-```
-Claude，在 D 盘创建一个 test 文件夹，里面放一个 hello.py 打印 Hello World，然后运行它
-```
-
-预期：创建成功，运行输出 Hello World。
-
-### 8.2 GitHub 全流程
+Claude Desktop 的 MCP 配置文件位于：
 
 ```
-Claude，搜索 GitHub 上名为 "awesome-python" 的仓库，告诉我它的 star 数和描述
+C:\Users\<你的用户名>\AppData\Local\Claude-3p\
+  └── local-agent-mode-sessions\
+      └── d375d661-6dbb-408e-9969-402193c8f3a5\
+          └── 00000000-0000-4000-8000-000000000001\
+              └── local_<随机ID>\
+                  └── uploads\
+                      └── claude_desktop_config.json
 ```
 
-预期：返回仓库的 star 数和描述。
+最快的找到方式：在 Claude Desktop 中直接说「帮我找到 claude_desktop_config.json 文件的位置」，Claude 会返回完整路径。
 
-### 8.3 浏览器自动化
+### 8.2 需要替换的内容
 
+打开配置文件后，搜索并替换以下三项：
+
+| 搜索（原值关键特征） | 替换为 |
+|---------------------|--------|
+| `ghp_` 开头的 GitHub Token | 你的 GitHub Personal Access Token |
+| `sk-` 开头的 DeepSeek API Key（在 `MCP_LLM_API_KEY` 和 `DEEPSEEK_API_KEY` 两处） | 你的 DeepSeek API Key |
+| `D:\\python3.13\\Scripts\\uvx.exe`（如果你的 Python 不在这个路径） | 你的 uvx.exe 实际路径 |
+
+**替换后重启 Claude Desktop 即可生效。**
+
+### 8.3 完整配置参考
+
+以下是本仓库提供的脱敏版配置文件：[claude_desktop_config.json](claude_desktop_config.json)
+
+你可以直接复制这个文件的内容，粘贴到你的配置文件中，然后替换三个占位符。
+
+配置文件结构说明：
+
+```json
+{
+  "mcpServers": {
+    "github":        // GitHub MCP — 通过 WSL 运行
+    "wsl-exec":      // WSL-Exec — 终端命令执行  
+    "browser-use":   // Browser-Use — 浏览器自动化
+  },
+  "deploymentMode": "3p",    // Cowork 3P Gateway 模式
+  "preferences": { ... }     // UI 偏好设置
+}
 ```
-Claude，打开百度首页，告诉我搜索框出现了没有
-```
 
-预期：自动打开百度，确认搜索框已加载。
+**各 MCP Server 的关键配置说明**：
 
-### 8.4 完整联动
-
-```
-Claude，在 GitHub 上搜一个 Python 开源项目，clone 到 D 盘，分析项目结构，然后在浏览器里打开它的官方文档
-```
-
-预期：搜索 → clone → 分析 → 打开文档，一气呵成。
+| 配置项 | 所属 | 说明 |
+|--------|------|------|
+| `GITHUB_PERSONAL_ACCESS_TOKEN` | github | GitHub 个人访问令牌，格式 `ghp_xxx` |
+| `MCP_LLM_PROVIDER` | browser-use | 驱动浏览器代理的 LLM，示例用 `deepseek` |
+| `MCP_LLM_API_KEY` | browser-use | LLM 的 API Key |
+| `DEEPSEEK_API_KEY` | browser-use | DeepSeek 专用 Key（与上面相同） |
+| `CHROME_PATH` | browser-use | Chrome 浏览器路径 |
+| `BROWSER_USE_HEADLESS` | browser-use | `false` 表示显示浏览器窗口（调试用） |
+| `USE_OWN_BROWSER` | browser-use | `True` 使用本地已安装的 Chrome |
 
 ---
 
 ## 9. 工具路由规则（记忆配置）
 
-部署完成后，需要让 Claude 记住：命令走 WSL，浏览器走 Browser-Use，不要碰自带但不可用的工具。
+部署完成后，让 Claude 记住工具优先级。
 
-在 Claude 中执行以下指令（或手动创建 MEMORY.md）：
+在 Claude 中执行：
 
-> "记住以下工具路由规则：所有命令执行走 WSL-Exec（mcp__wsl-exec__*），不用自带的 workspace/bash。所有浏览器交互走 Browser-Use（mcp__browser-use__run_browser_agent / run_deep_research），不用 Claude-in-Chrome。所有 GitHub 操作走 GitHub MCP（mcp__github__*），本地 git 走 WSL。WebSearch 和 WebFetch 照常使用——它们是 API 层面的搜索工具，不受影响。"
+> "记住以下工具路由规则：所有命令执行走 WSL-Exec，不用自带的 workspace/bash。所有浏览器交互走 Browser-Use，不用 Claude-in-Chrome。所有 GitHub 操作走 GitHub MCP，本地 git 走 WSL。WebSearch 和 WebFetch 照常使用。"
 
-这条路由规则的核心逻辑：
+核心逻辑：
 
 ```
-要执行命令      → WSL-Exec  （不是沙箱 Bash）
-要搜信息        → WebSearch / WebFetch  （API 层面，不涉及浏览器）
-要操控网页      → Browser-Use  （不是 Claude-in-Chrome）
+要执行命令      → WSL-Exec
+要搜信息        → WebSearch / WebFetch
+要操控网页      → Browser-Use
 要操作 GitHub   → GitHub MCP + WSL 本地 git
 ```
 
@@ -428,51 +335,48 @@ Claude，在 GitHub 上搜一个 Python 开源项目，clone 到 D 盘，分析�
 
 ## 10. 常见问题
 
-### Q: WSL 命令需要确认怎么办？
+### Q: 配置文件改完后 Claude 没变化？
 
-A: 危险命令（如 `rm -rf`、涉及系统文件的修改）会触发确认机制。日常操作（创建文件、运行脚本、安装包）通常不需要确认。
+A: 重启 Claude Desktop。如果仍然无效，检查 Token 是否已过期、路径是否正确。
+
+### Q: WSL 命令总是需要确认？
+
+A: 危险命令（如 `rm -rf`、操作系统文件）会触发确认。日常操作（创建文件、运行脚本、安装包）通常不需要确认。
 
 ### Q: Browser-Use 和 WebSearch 有什么区别？
 
 A: `WebSearch` 是 API 级别的搜索，返回文本结果。`Browser-Use` 是真实的浏览器，可以点击、填表、截图、做多步骤交互。搜索信息用前者，需要"操作网页"才用后者。
 
-### Q: 我的 Token 过期了怎么办？
+### Q: GitHub Token 过期了怎么办？
 
-A: 回到 [GitHub Settings → Tokens](https://github.com/settings/tokens) 重新生成，更新 MCP 配置文件中的 `GITHUB_PERSONAL_ACCESS_TOKEN` 值，重启 Claude Desktop。
+A: 到 [GitHub Settings → Tokens](https://github.com/settings/tokens) 重新生成，更新配置文件，重启 Claude Desktop。
 
-### Q: WSL 里的文件和 Windows 怎么互通？
+### Q: WSL 文件和 Windows 怎么互通？
 
-A: WSL 自动将所有 Windows 盘符挂载在 `/mnt/` 下：
-- `C:\Users\xuqia\Documents` → `/mnt/c/Users/xuqia/Documents`
+A: WSL 自动挂载 Windows 盘符到 `/mnt/`：
+- `C:\Users\xxx\Documents` → `/mnt/c/Users/xxx/Documents`
 - `D:\projects` → `/mnt/d/projects`
 
-在 WSL 中创建的文件会直接出现在 Windows 文件系统中，反之亦然。
+### Q: 需要三个都装吗？
 
-### Q: 需要同时装这三个吗？
-
-A: 按需选择：
-- 只需要执行命令和读写文件 → 只装 WSL-Exec
-- 只需要 GitHub 操作 → 只装 GitHub MCP
-- 只需要浏览器自动化 → 只装 Browser-Use
+A: 按需选择，互相独立：
+- 只要终端和文件 → WSL-Exec
+- 只要 GitHub → GitHub MCP
+- 只要浏览器 → Browser-Use
 - 完整能力 → 三个都装
-
-它们是互相独立的，不存在依赖关系。
 
 ---
 
-## 版本参考
+## 版本参考（2026 年 5 月）
 
-以下是本教程编写时使用的版本（2026 年 5 月）：
-
-| 组件 | 版本 |
-|------|------|
-| Windows | 10/11，版本 2004+ |
+| 组件 | 版本要求 |
+|------|----------|
+| Windows | 10 2004+ 或 11 |
 | WSL | 2.x |
-| Ubuntu | 22.04 LTS 或 24.04 LTS |
+| Ubuntu | 22.04 / 24.04 LTS |
 | Python | 3.10+ |
 | Git | 2.40+ |
 | Node.js | 20.x LTS |
-| npm | 10.x |
 
 ---
 
