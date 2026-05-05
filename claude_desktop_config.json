@@ -35,9 +35,7 @@
         "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         "BROWSER_USE_HEADLESS": "false",
         "MCP_AGENT_TOOL_MAX_STEPS": "30",
-        "MCP_SERVER_LOGGING_LEVEL": "DEBUG",
-        "USE OWN BROWSER": "True",
-        "USE_OWN_BROWSER": "True"
+        "MCP_SERVER_LOGGING_LEVEL": "DEBUG"
       }
     }
   },
