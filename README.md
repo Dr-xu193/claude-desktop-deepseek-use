@@ -1,4 +1,101 @@
-# Claude Desktop + DeepSeek 完整配置教程
+# Multi-Model Agent Workflow Lab
+
+> Public validation branch for multi-model coding-agent workflows with Codex-compatible routing, Claude Desktop, DeepSeek, MCP tools, WSL execution, GitHub automation, browser automation, and skill-based developer workflows.
+
+## Project Status
+
+This repository is an early public validation branch for a broader multi-model coding-agent platform. Maintainer context: the platform is being developed by a 15-person team, and this repository is maintained by one of its core developers.
+
+The goal is to explore practical coding-agent workflows that can integrate Codex, Claude, DeepSeek, and other major models through MCP servers, skill routing, shell execution, GitHub automation, browser automation, and reproducible evaluation tasks.
+
+The current repository focuses on setup documentation, tool routing, MCP integration, and real-world workflow testing. A broader public release is planned around mid-May 2026.
+
+## What This Repository Provides
+
+- Claude Desktop + DeepSeek setup guide
+- WSL-based command execution workflow
+- GitHub MCP integration
+- Browser-Use automation setup
+- Sanitized configuration examples
+- Tool routing rules for coding agents
+- Planned Codex-compatible workflow examples
+- Planned skill-based agent templates
+- Planned reproducible evaluation tasks
+
+## Why This Matters
+
+Modern coding agents need more than text generation. They need controlled access to local files, shell execution, repository operations, browser automation, model routing, and reproducible workflows.
+
+This repository documents an early public testing layer for a system that aims to make multi-model coding agents easier to configure, evaluate, and extend.
+
+## For OpenAI Codex for OSS Reviewers
+
+This repository is new and currently has limited public GitHub activity, but it is intended to reflect active development rather than final project maturity.
+
+The purpose of this repository is to become a public validation branch for Codex-compatible agent workflows, including:
+
+- code generation workflows
+- refactoring workflows
+- test generation workflows
+- issue triage workflows
+- pull request review assistance
+- documentation generation
+- MCP tool integration
+- browser automation
+- skill-based routing
+- safe local execution patterns
+
+If granted API credits or Codex access, the project plan is to use them to build reproducible open examples and improve the public release of this project.
+
+## Experimental Multimodal Skill Pipeline
+
+We are experimenting with multimodal skill pipelines that allow text-centric models to perform visual-understanding tasks through external perception tools, browser automation, structured reasoning workflows, and tool-assisted observation.
+
+This repository does not claim benchmark parity with any commercial model. The goal is to document practical engineering workflows, not to make unsupported performance claims.
+
+## Safety Boundary
+
+This repository may document workflows that involve local shell execution, browser automation, GitHub API access, and LLM API credentials. Examples should remain placeholder-based and reproducible. Do not commit real API keys, browser cookies, local session files, or private configuration.
+
+Commands that write files, install packages, automate browsers, or call external APIs should be reviewed before execution and should use the minimum required permissions.
+
+## Repository Structure
+
+```text
+.
+|-- README.md
+|-- ROADMAP.md
+|-- CONTRIBUTING.md
+|-- SECURITY.md
+|-- .gitignore
+|-- claude_desktop_config.json
+`-- examples/
+    |-- codex-workflows/
+    |-- claude-desktop-workflows/
+    |-- mcp-routing/
+    |-- browser-automation/
+    |-- github-automation/
+    `-- multimodal-skill-pipeline/
+```
+
+## Planned GitHub Issues
+
+Suggested issues for early public tracking:
+
+- Add Codex-compatible workflow examples
+- Add MCP skill routing template
+- Add security checklist for local command execution
+- Add GitHub issue triage example
+- Add pull request review workflow example
+- Add browser automation reproducibility notes
+- Add multimodal skill pipeline example
+- Add Windows/WSL troubleshooting matrix
+- Add benchmark-style evaluation tasks
+- Add release checklist for v0.1.0-public-validation
+
+---
+
+# Legacy Setup Guide: Claude Desktop + DeepSeek
 
 让 Claude Desktop（Cowork 3P Gateway 模式）获得：真实文件系统读写、Git/GitHub 全流程操作、浏览器自动化能力。
 
