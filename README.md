@@ -1,6 +1,6 @@
 # Multi-Model Agent Workflow Lab
 
-> Public validation branch for multi-model coding-agent workflows with Codex-compatible routing, Claude Desktop, DeepSeek, MCP tools, WSL execution, GitHub automation, browser automation, and skill-based developer workflows.
+ Public validation branch for multi-model coding-agent workflows with Codex-compatible routing, Claude Desktop, DeepSeek, MCP tools, WSL execution, GitHub automation, browser automation, and skill-based developer workflows.
 
 ## Project Status
 
